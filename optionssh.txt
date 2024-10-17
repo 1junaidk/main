@@ -1,0 +1,112 @@
+import pexpect
+import telnetlib
+
+# Define common variables
+ip_address = '192.168.56.101'
+username = 'prne'
+password = 'cisco123!'
+password_enable = 'class123!'
+
+def ssh_connection(ip_address, username, password, password_enable):
+    print('Starting SSH Connection...')
+    
+    # Create the SSH session
+    session = pexpect.spawn('ssh ' + username + '@' + ip_address, encoding='utf-8', timeout=20)
+    result = session.expect(['Password:', pexpect.TIMEOUT, pexpect.EOF])
+
+    # Check for error, if exists then display error and exit
+    if result != 0:
+        print('--- FAILURE! creating session for: ', ip_address)
+        exit()
+
+    # Session expecting password, enter details
+    session.sendline(password)
+    result = session.expect(['>', pexpect.TIMEOUT, pexpect.EOF])
+
+    if result != 0:
+        print('--- FAILURE! entering password: ', password)
+        exit()
+
+    # Enter enable mode
+    session.sendline('enable')
+    result = session.expect(['Password:', pexpect.TIMEOUT, pexpect.EOF])
+
+    if result != 0:
+        print('--- Failure! entering enable mode')
+        exit()
+
+    # Send enable password
+    session.sendline(password_enable)
+    result = session.expect(['#', pexpect.TIMEOUT, pexpect.EOF])
+
+    if result != 0:
+        print('--- Failure! entering enable mode after sending password')
+        exit()
+
+    # Enter configuration mode
+    session.sendline('configure terminal')
+    result = session.expect([r'.\(config\)#', pexpect.TIMEOUT, pexpect.EOF])
+
+    if result != 0:
+        print('--- Failure! entering config mode')
+        exit()
+
+    print('--- SSH Connection Successful!')
+    
+    # Exit config mode
+    session.sendline('exit')
+
+    # Exit enable mode
+    session.sendline('exit')
+
+    # Terminate SSH session
+    session.close()
+
+def telnet_connection(ip_address, username, password, password_enable):
+    print('Starting Telnet Connection...')
+
+    # Create Telnet session
+    session = telnetlib.Telnet(ip_address)
+
+    # Login sequence for Telnet
+    session.read_until(b"Username: ")
+    session.write(username.encode('ascii') + b"\n")
+
+    session.read_until(b"Password: ")
+    session.write(password.encode('ascii') + b"\n")
+
+    # Enter enable mode
+    session.write(b"enable\n")
+    session.read_until(b"Password: ")
+    session.write(password_enable.encode('ascii') + b"\n")
+
+    # Enter configuration mode
+    session.write(b"configure terminal\n")
+
+    # Change hostname
+    session.write(b"hostname Router1\n")
+
+    # Exit configuration and close session
+    session.write(b"exit\n")
+    session.write(b"exit\n")
+    session.close()
+
+    print('--- Telnet Connection Successful!')
+
+# Main logic to choose between SSH or Telnet
+def main():
+    print("Please select a connection method:")
+    print("1. SSH")
+    print("2. Telnet")
+
+    choice = input("Enter 1 for SSH or 2 for Telnet: ")
+
+    if choice == '1':
+        ssh_connection(ip_address, username, password, password_enable)
+    elif choice == '2':
+        telnet_connection(ip_address, username, password, password_enable)
+    else:
+        print("Invalid choice! Please select either 1 or 2.")
+
+if __name__ == "__main__":
+    main()
