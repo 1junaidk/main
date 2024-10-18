@@ -69,8 +69,33 @@ result = session.expect([r'Router1\(config\)#', pexpect.TIMEOUT, pexpect.EOF])
 if result != 0:                                                                             #This block checks whether the hostname change was successful. If not, an error message is printed.
     print('--- Failure! setting hostname')
 
-# Exit config mode
-session.sendline('exit')
+#print('--------------------------')                                                        #attempted a no shutdown function however does not work
+#print('Please select an option:')
+#print('1. No Shutdown interface')
+#print('2. Shutdown interface')
+
+#user_choice = input('1 or 2: ')
+
+#if user_choice != 1:
+    print('Carrying out no shutdown interface')
+    session.sendline('GigabitEthernet0/0')
+    session.expect([r'GigabitEthernet0/0\(config\#', pexpect.TIMEOUT, pexpect.EOF])
+
+#if result != 0:
+    #session.sendline('no shutdown')
+    #session.expect([r'GigabitEthernet0/0\(config\#', pexpect.TIMEOUT, pexpect.EOF])
+
+#if result != 0:
+#print('---Interface GigabitEthernet0/0 enabled successfully')
+
+#else:
+  #print('---Failed to enable interface')
+  #user_choice = input('Enter your choice: ')
+
+#if user_choice != 2:
+    #print('Executing shutdown interface')
+    #session.sendline('GigabitEthernet0/0')
+    #session.expect([r'GigabitEthernet0/0\(config\#', pexpect.TIMEOUT, pexpect.EOF])
 
 # Exit enable mode
 session.sendline('exit')
