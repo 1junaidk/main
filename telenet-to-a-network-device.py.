@@ -2,13 +2,14 @@
 import pexpect
 
 #Define variables
-ip_address = '192.168.56.101' 
-username = 'cisco'
-password = 'cisco123!'
+ip_address = '192.168.56.101'                  # Sets the IP address of the target device for the telnet session.
+username = 'cisco'                             # Specifies the username for logging into the device.
+password = 'cisco123!'                         # Specifies the password associated with the username for authentication
 
 #create telenet session
 session = pexpect.spawn('telnet ' + ip_address, encoding='utf-8', 
-                        timeout=20)
+                        timeout=20)           #Initiates a telnet session to the specified IP address with a timeout of 20 seconds for operations.
+
 result = session.expect(['Username: ', pexpect.TIMEOUT])
 
 # Check for error, if exists then display error and exit 
@@ -17,7 +18,7 @@ if result != 0:
     exit()
 
 session.sendline(username)
-result = session.expect(['Password: ', pexpect.TIMEOUT])
+result = session.expect(['Password: ', pexpect.TIMEOUT])       #Waits for the password prompt either returns successful or timesout
 
 if result != 0:
     print('--- FAILURE! entering username: ', username)
