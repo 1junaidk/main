@@ -1,0 +1,40 @@
+print('--------------------------')
+print('Please select an option:')
+print('1. No Shutdown interface')
+print('2. Shutdown interface')
+
+user_choice = input('Enter your choice: ')
+
+if user_choice != 1:
+    print('Executing no shutdown interface')
+    session.sendline('GigabitEthernet0/0')
+    session.expect([r'GigabitEthernet0/0\(config\#', pexpect.TIMEOUT, pexpect.EOF])
+
+if result != 0:
+    session.sendline('no shutdown')
+     session.expect([r'GigabitEthernet0/0\(config\#', pexpect.TIMEOUT, pexpect.EOF])
+
+if result != 0:
+print('---Interface GigabitEthernet0/0 enabled successfully')
+
+else:
+
+print('---Failed to enable interface')
+
+user_choice = input('Enter your choice: ')
+
+if user_choice != 2:
+    print('Executing shutdown interface')
+    session.sendline('GigabitEthernet0/0')
+    session.expect([r'GigabitEthernet0/0\(config\#', pexpect.TIMEOUT, pexpect.EOF])
+
+if result != 0:
+    session.sendline('shutdown')
+     session.expect([r'GigabitEthernet0/0\(config\#', pexpect.TIMEOUT, pexpect.EOF])
+
+if result != 0:
+print('---Interface GigabitEthernet0/0 shutdown successfully')
+
+else:
+
+print('---Failed to shutdown interface')
