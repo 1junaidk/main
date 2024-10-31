@@ -1,0 +1,52 @@
+from netmiko import ConnectHandler
+import difflib
+
+# Device connection details
+device = {
+    'device_type': 'cisco_ios',
+    'ip': '192.168.1.1',  # Replace with device IP
+    'username': 'admin',  # Replace with device username
+    'password': 'password123',  # Replace with device password
+}
+
+# Connect to device
+net_connect = ConnectHandler(**device)
+
+# Retrieve running and startup configurations
+running_config = net_connect.send_command('show running-config').splitlines()
+startup_config = net_connect.send_command('show startup-config').splitlines()
+
+# Close connection
+net_connect.disconnect()
+
+# Compare running and startup configs
+diff = difflib.unified_diff(startup_config, running_config, fromfile='Startup Config', tofile='Running Config', lineterm='')
+
+print("Differences between Running and Startup Configurations:")
+for line in diff:
+    print(line)
+
+# Hardening compliance checks
+print("\nHardening Compliance Checks:")
+hardening_issues = []
+
+# Check for SSH configuration
+if not any('transport input ssh' in line for line in running_config):
+    hardening_issues.append("Warning: SSH is not enabled!")
+
+# Check for Telnet disabled
+if any('transport input telnet' in line for line in running_config):
+    hardening_issues.append("Warning: Telnet is enabled! Disable it for security.")
+
+# Check for logging configuration
+if not any('logging' in line for line in running_config):
+    hardening_issues.append("Warning: Logging is not configured.")
+
+# Output hardening issues
+if hardening_issues:
+    print("\nHardening Issues Found:")
+    for issue in hardening_issues:
+        print(issue)
+else:
+    print("All basic hardening checks passed.")
+
