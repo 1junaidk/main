@@ -1,0 +1,25 @@
+Traceback (most recent call last):
+  File "/home/devasc/.local/lib/python3.8/site-packages/netmiko/base_connection.py", line 899, in establish_connection
+    self.remote_conn_pre.connect(**ssh_connect_params)
+  File "/home/devasc/.local/lib/python3.8/site-packages/paramiko/client.py", line 349, in connect
+    retry_on_signal(lambda: sock.connect(addr))
+  File "/home/devasc/.local/lib/python3.8/site-packages/paramiko/util.py", line 283, in retry_on_signal
+    return function()
+  File "/home/devasc/.local/lib/python3.8/site-packages/paramiko/client.py", line 349, in <lambda>
+    retry_on_signal(lambda: sock.connect(addr))
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "ssh2.py", line 119, in <module>
+    net_connect = ConnectHandler(**device)
+  File "/home/devasc/.local/lib/python3.8/site-packages/netmiko/ssh_dispatcher.py", line 266, in ConnectHandler
+    return ConnectionClass(*args, **kwargs)
+  File "/home/devasc/.local/lib/python3.8/site-packages/netmiko/base_connection.py", line 327, in __init__
+    self._open()
+  File "/home/devasc/.local/lib/python3.8/site-packages/netmiko/base_connection.py", line 332, in _open
+    self.establish_connection()
+  File "/home/devasc/.local/lib/python3.8/site-packages/netmiko/base_connection.py", line 905, in establish_connection
+    raise NetmikoTimeoutException(msg)
+netmiko.ssh_exception.NetmikoTimeoutException: Connection to device timed-out: cisco_ios 192.168.1.1:22
