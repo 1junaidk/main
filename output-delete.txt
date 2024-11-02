@@ -1,0 +1,13 @@
+-------------------------------------------------
+Connection Details:
+--- Success! Connecting to: 192.168.56.101
+---                        Username: prne
+---                          Password: cisco123!
+---              Enable Password: class123!
+--------------------------------------------------
+
+[FAIL] SSH enabled
+[FAIL] Telnet disabled
+[FAIL] Password encryption
+[FAIL] Logging enabled
+[FAIL] NTP configured
