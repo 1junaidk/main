@@ -1,0 +1,16 @@
+hardening_checks = {
+    "SSH enabled": "ip ssh version 2",
+    "Telnet disabled": "no service telnet",
+    "Password encryption": "service password-encryption",
+    "Logging enabled": "logging buffered",
+    "NTP configured": "ntp server"
+}
+
+def check_hardening(running_config):
+    for check, rule in hardening_checks.items():
+        if rule in running_config:
+            print(f"[PASS] {check}")
+        else:
+            print(f"[FAIL] {check}")
+
+check_hardening(running_config)
