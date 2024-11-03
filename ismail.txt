@@ -1,0 +1,93 @@
+from netmiko import ConnectHandler
+import difflib
+
+# Device configuration
+device = {
+    'device_type': 'cisco_ios',
+    'ip': '192.168.1.1',       # Replace with your router's IP
+    'username': 'admin',        # Replace with your username
+    'password': 'password',     # Replace with your password
+    'secret': 'enable_password' # Replace with enable password if required
+}
+
+# Connect to the device
+connection = ConnectHandler(**device)
+connection.enable()  # Enter privileged mode if needed
+
+# Retrieve running configuration
+running_config = connection.send_command('show running-config')
+# Retrieve startup configuration
+startup_config = connection.send_command('show startup-config')
+
+# Save running configuration to a file
+with open('running_config.txt', 'w') as run_file:
+    run_file.write(running_config)
+
+# Save startup configuration to a file
+with open('startup_config.txt', 'w') as start_file:
+    start_file.write(startup_config)
+
+# Disconnect from the device
+connection.disconnect()
+
+# Print confirmation
+print("Configs retrieved and stored successfully.")
+
+# Function to compare configurations
+def compare_configs(file1, file2):
+    with open(file1, 'r') as f1, open(file2, 'r') as f2:
+        # Read lines from both files
+        running_lines = f1.readlines()
+        startup_lines = f2.readlines()
+        
+        # Use difflib to get the difference
+        diff = difflib.unified_diff(
+            running_lines, 
+            startup_lines, 
+            fromfile='Running Config', 
+            tofile='Startup Config', 
+            lineterm=''
+        )
+        
+        # Display the differences line by line
+        print("\nDifferences between Running and Startup Configurations:\n")
+        for line in diff:
+            print(line)
+
+# Call the compare function
+compare_configs('running_config.txt', 'startup_config.txt')
+
+
+
+
+from netmiko import ConnectHandler
+
+# Define device and syslog server IP
+device = {
+    'device_type': 'cisco_ios',
+    'ip': '192.168.1.1',       # Replace with your router's IP
+    'username': 'admin',        # Replace with your username
+    'password': 'password',     # Replace with your password
+    'secret': 'enable_password' # Replace with enable password if required
+}
+syslog_server_ip = "192.168.1.100"  # Replace with your syslog server's IP
+
+# Connect to the device
+connection = ConnectHandler(**device)
+connection.enable()  # Enter privileged mode if needed
+
+# Configure the device to enable syslog
+commands = [
+    f"logging host {syslog_server_ip}",
+    "logging trap informational",     # Set the logging level to informational
+    "logging on"                      # Enable logging
+]
+output = connection.send_config_set(commands)
+
+# Disconnect from the device
+connection.disconnect()
+
+# Print the output to confirm the configuration
+print("Syslog configuration output:\n", output)
+print(f"Syslog configured to send logs to {syslog_server_ip}.")
+
