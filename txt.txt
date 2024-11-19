@@ -1,0 +1,26 @@
+# Connect to the device
+net_connect = ConnectHandler(**device)  # Establish connection to the device
+net_connect.enable()
+
+# Configure Loopback Interface
+loopback_config = [
+    'interface Loopback0',
+    'ip address 1.1.1.1 255.255.255.255'
+]
+net_connect.send_config_set(loopback_config)
+
+# Configure another interface
+interface_config = [
+    'interface GigabitEthernet2',
+    'ip address 192.168.1.1 255.255.255.0',
+    'no shutdown'
+]
+net_connect.send_config_set(interface_config)
+
+# Advertise OSPF
+ospf_config = [
+    'router ospf 1',
+    'network 1.1.1.1 0.0.0.0 area 0',
+    'network 192.168.1.0 0.0.0.255 area 0'
+]
+net_connect.send_config_set(ospf_config)
