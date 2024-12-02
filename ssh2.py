@@ -214,3 +214,63 @@ def check_hardening(running_config):
             print(f"[FAIL] {check}")
 
 check_hardening(running_config)
+
+from netmiko import ConnectHandler
+import getpass
+
+# Define the device parameters
+device = {
+    'device_type': 'cisco_ios',
+    'ip': '192.168.56.101',  # Replace with actual IP address
+    'username': input('Enter a username: '),  # Prompt for username
+    'password': getpass.getpass('Enter password: '),  # Prompt for password
+    'secret': getpass.getpass('Enter secret password: ')  # Prompt for enable password
+}
+
+# Connect to the device
+net_connect = ConnectHandler(**device)
+net_connect.enable()
+
+# Configure Loopback Interface
+loopback_config = [
+    'interface Loopback0',
+    'ip address 1.1.1.1 255.255.255.255'
+]
+net_connect.send_config_set(loopback_config)
+
+# Configure another interface
+interface_config = [
+    'interface GigabitEthernet0/2',
+    'ip address 192.168.11.25 255.255.255.0',
+    'no shutdown'
+]
+net_connect.send_config_set(interface_config)
+
+# Advertise OSPF
+ospf_config = [
+    'router ospf 1',
+    'network 1.1.1.0 0.0.0.255 area 0',
+    'network 192.168.11.0 0.0.0.255 area 0'
+]
+net_connect.send_config_set(ospf_config)
+
+# Change the hostname
+new_hostname = 'R1'
+config_commands = [
+    'configure terminal',
+    f'hostname {new_hostname}'
+]
+output = net_connect.send_config_set(config_commands)
+
+# Save the running configuration to a local file
+running_config = net_connect.send_command('show running-config')
+with open('running-config.txt', 'w') as file:
+    file.write(running_config)
+
+# Show interface brief
+show_ip_interface_brief = net_connect.send_command('show ip interface brief')
+print("\n--- Output of 'show ip interface brief': ---\n")
+print(show_ip_interface_brief)
+
+# Disconnect from the device
+net_connect.disconnect()
