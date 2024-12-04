@@ -304,3 +304,51 @@ print(output)
 
 connection.disconnect()
 
+
+#new 
+from netmiko import ConnectHandler
+import time
+
+# Define the device connection details
+csr1kv = {
+    'device_type': 'cisco_ios',
+    'host': '192.168.1.1',  # Replace with the IP address of your CSR1kv router
+    'username': 'admin',     # Replace with your router's username
+    'password': 'password',  # Replace with your router's password
+    'secret': 'enable',      # Replace with your enable secret if needed
+}
+
+# Connect to the router
+net_connect = ConnectHandler(**csr1kv)
+
+# Enter enable mode
+net_connect.enable()
+
+# Define the RIP configuration commands
+rip_config_commands = [
+    'router rip',  # Enable RIP routing protocol
+    'version 2',   # Set RIP version 2
+    'no auto-summary',  # Disable automatic summarization
+    'network 192.168.1.0',  # Advertise the 192.168.1.0 network (adjust according to your topology)
+    'network 192.168.2.0',  # Advertise the 192.168.2.0 network (adjust according to your topology)
+]
+
+# Send RIP configuration commands to the router
+output = net_connect.send_config_set(rip_config_commands)
+
+# Wait a little for configuration to apply
+time.sleep(2)
+
+# Show the configuration to verify that RIP has been applied
+output_verify = net_connect.send_command('show running-config | section router rip')
+
+# Print the configuration output
+print(output_verify)
+
+# Optionally, you can also show the RIP routes to verify that RIP is working
+rip_routes = net_connect.send_command('show ip route rip')
+print(rip_routes)
+
+# Close the connection
+net_connect.disconnect()
+
