@@ -351,4 +351,21 @@ print(rip_routes)
 
 # Close the connection
 net_connect.disconnect()
+##richi
 
+# Add OSPF Configuration
+ospf_commands = [
+    'router ospf 1',  # Start OSPF process
+    'network 192.168.1.1 0.0.0.0 area 0',  # Advertise Loopback0
+    'network 1.1.1.0 0.0.0.255 area 0',  # Advertise GigabitEthernet2
+    'passive-interface Loopback0',  # Passive for Loopback0
+]
+
+print("Configuring OSPF...")
+ospf_output = connection.send_config_set(ospf_commands)
+print(ospf_output)
+
+# Save the configuration
+print("Saving configuration...")
+save_output = connection.send_command("write memory")
+print(save_output)
