@@ -255,12 +255,12 @@ ospf_commands = [
     'passive-interface Loopback0',  # Passive for Loopback0
 ]
 
-print("Configuring OSPF...")
+print("Configuring OSPF.")
 ospf_output = connection.send_config_set(ospf_commands)
 print(ospf_output)
 
 # Save the configuration
-print("Saving configuration...")
+print("Saving configuration.")
 save_output = connection.send_command("write memory")
 print(save_output)
 
